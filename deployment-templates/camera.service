@@ -1,0 +1,9 @@
+[Unit]
+Description=Motion tracking camera system
+[Service]
+ExecStart=/bin/bash ${project.deployDir}/start_service.sh
+WorkingDirectory=${project.deployDir}
+User=${project.deployUser}
+Environment=OPEN_CV_BUILD=${project.openCvBuild}
+[Install]
+WantedBy=multi-user.target

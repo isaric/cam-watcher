@@ -1,0 +1,11 @@
+.gradle
+build
+.idea
+*.iml
+*.avi
+*.log
+logs/
+*.zip
+*.jpg
+deployment
+dev_app.properties
