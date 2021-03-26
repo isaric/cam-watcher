@@ -2,8 +2,10 @@ plugins {
     id 'java'
     id 'application'
     id "com.github.johnrengelman.shadow" version "6.0.0"
+    id 'maven-publish'
 }
 
+group = 'com.path.variable.picam'
 version = '1.0.0-SNAPSHOT'
 
 repositories {
@@ -37,4 +39,30 @@ task generateDeploymentFiles(type: Copy) {
     into "$project.projectDir/deployment"
     include '*'
     expand(project: project)
+}
+
+
+shadowJar {
+    baseName('cam-watcher')
+    classifier('')
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            from project.shadow.component(publication)
+            artifactId = 'cam-watcher'
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/isaric/cam-watcher"
+            credentials {
+                username = "isaric"
+                password = property("github.token")
+            }
+        }
+    }
+
 }
