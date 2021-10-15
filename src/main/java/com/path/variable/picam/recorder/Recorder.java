@@ -3,6 +3,7 @@ package com.path.variable.picam.recorder;
 import com.path.variable.commons.slack.SlackHook;
 import com.path.variable.picam.recorder.detectors.AbstractDetector;
 import com.path.variable.picam.recorder.detectors.AreaMotionDetector;
+import com.path.variable.picam.recorder.notifiers.Notifier;
 import com.path.variable.picam.recorder.wrapper.CameraWrapper;
 import com.path.variable.picam.recorder.wrapper.WriterWrapper;
 import org.opencv.core.Size;
@@ -18,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import static com.path.variable.commons.properties.Configuration.getConfiguration;
 import static com.path.variable.picam.properties.RecorderConstants.*;
@@ -45,20 +47,23 @@ public class Recorder {
 
     private final AbstractDetector detector;
 
-    private final SlackHook slackHook;
+    private final List<Notifier> notifiers;
+
+    private final Double recorderSpecificArea;
 
     private boolean stop;
 
-    public Recorder(int cameraNumber, Integer deviceId, String locationName, String path) {
+    public Recorder(int cameraNumber, Integer deviceId, String locationName, String path, Double recorderSpecificArea, List<Notifier> notifiers) {
+        this.notifiers = notifiers;
         this.tempFilePath = format(TEMP_FILE_NAME_TEMPLATE, cameraNumber);
         this.cameraNumber = cameraNumber;
         this.locationName = locationName;
+        this.recorderSpecificArea = recorderSpecificArea;
         var cam = resolveVideoCapture(deviceId, path);
         this.fps = (int) cam.get(Videoio.CAP_PROP_FPS);
         this.frameSize = new Size((int) cam.get(Videoio.CAP_PROP_FRAME_WIDTH), (int) cam.get(Videoio.CAP_PROP_FRAME_HEIGHT));
         var save = new VideoWriter(tempFilePath, VideoWriter.fourcc('x', '2', '6', '4'), fps, frameSize, true);
         this.writer = new WriterWrapper(save, locationName, getConfiguration().getBoolean("timestamp.{0}", false, cameraNumber));
-        slackHook = new SlackHook(getConfiguration().getString("slack.hook"));
         this.camera = new CameraWrapper(cam);
         this.detector = setupDetector();
     }
@@ -79,13 +84,13 @@ public class Recorder {
                 while ((allTime || hasNotElapsed(start, maxRuntime, ChronoUnit.MINUTES)) && !stop) {
                     if (detector.detect()) {
                         var msg = String.format(ALERT_MESSAGE_TEMPLATE, locationName, STANDARD_DATE_FORMAT.format(new Date()));
-                        slackHook.sendPlainText(msg);
+                        notify(msg);
                         LOG.info(msg);
                         try {
                             doRecordForMinutes(captureDuration);
                         } catch (Exception ex) {
                             var errMsg = "Recording of motion interrupted. Attempting to salvage file.";
-                            slackHook.sendPlainText(errMsg);
+                            notify(errMsg);
                             LOG.error(errMsg);
                             attemptSalvage();
                             terminate(ex);
@@ -121,11 +126,15 @@ public class Recorder {
         }
     }
 
+    private void notify(String message) {
+        notifiers.forEach(n -> n.notify(message));
+    }
+
     private void terminate(Exception ex) {
         if (ex instanceof IllegalStateException) {
             var msg = "Camera offline! Terminating recorder!";
             LOG.error(msg);
-            slackHook.sendPlainText(msg);
+            notify(msg);
             Thread.currentThread().interrupt();
         }
     }
@@ -144,7 +153,7 @@ public class Recorder {
         } catch (IOException e) {
             e.printStackTrace();
             var errMsg = "Could not copy file for upload!";
-            slackHook.sendPlainText(errMsg);
+            notify(errMsg);
             LOG.error(errMsg);
         }
     }
@@ -160,7 +169,8 @@ public class Recorder {
     private AbstractDetector setupDetector() {
         var detectorParameters = new HashMap<String, Object>();
         detectorParameters.put("camera", camera);
-        detectorParameters.put("motion.contour.area", getConfiguration().getDouble("area.minimum"));
+        Double area = recorderSpecificArea == null ? getConfiguration().getDouble("area.minimum") : recorderSpecificArea;
+        detectorParameters.put("motion.contour.area", area);
         return new AreaMotionDetector(detectorParameters);
     }
 
