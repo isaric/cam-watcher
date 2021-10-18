@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,14 +23,13 @@ public class RecorderConfigurationReader {
 
     private final NotifierFactory notifierFactory = new NotifierFactory();
 
-    public List<Recorder> loadRecordersFromFolder(File configFolder) {
-        return mapFilesFromFolderToList(configFolder, this::loadRecorderFromFile).collect(Collectors.toList());
+    public Set<Recorder> loadRecordersFromFolder(File configFolder) {
+        return mapFilesFromFolderToList(configFolder, this::loadRecorderFromFile).collect(Collectors.toSet());
     }
 
-    public List<Integer> loadStopCommandsFromFolder(File stopFolder) {
+    public Set<Integer> loadStopCommandsFromFolder(File stopFolder) {
         return mapFilesFromFolderToList(stopFolder, this::loadStopCommandFromFile).flatMap(List::stream)
-                                                                                  .distinct()
-                                                                                  .collect(Collectors.toList());
+                                                                                  .collect(Collectors.toSet());
     }
 
     private <T> Stream<T> mapFilesFromFolderToList(File folder, Function<File, T> mappingFunction) {
@@ -53,9 +49,7 @@ public class RecorderConfigurationReader {
             int cameraId = resolveCameraIdFromFileName(configFile.getName());
             RecorderConfig recorderConfiguration = getRecorderConfig(configFile);
 
-            var recorder = new Recorder(cameraId, recorderConfiguration.getDeviceId(), recorderConfiguration.getLocation(),
-                    recorderConfiguration.getPath(), recorderConfiguration.getAreaMinimum(),
-                    getNotifiers(recorderConfiguration.getNotifiers()));
+            var recorder = new Recorder(recorderConfiguration, cameraId, getNotifiers(recorderConfiguration.getNotifiers()));
             LOG.info("Initialized camera recorder for location {} at number {}",
                     recorder.getLocationName(), recorder.getCameraNumber());
             configFile.delete();

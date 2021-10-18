@@ -9,7 +9,6 @@ import org.opencv.videoio.VideoWriter;
 
 import java.util.Date;
 
-import static com.path.variable.commons.properties.Configuration.getConfiguration;
 import static com.path.variable.picam.properties.RecorderConstants.STANDARD_DATE_FORMAT;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 

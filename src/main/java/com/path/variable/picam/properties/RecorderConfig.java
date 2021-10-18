@@ -13,6 +13,10 @@ public class RecorderConfig {
 
     private Double areaMinimum;
 
+    private Integer retries;
+
+    private Boolean printTimestamp;
+
     private List<Map<String, Object>> notifiers;
 
     public String getPath() {
@@ -48,6 +52,24 @@ public class RecorderConfig {
 
     public RecorderConfig setAreaMinimum(Double areaMinimum) {
         this.areaMinimum = areaMinimum;
+        return this;
+    }
+
+    public Integer getRetries() {
+        return retries;
+    }
+
+    public RecorderConfig setRetries(Integer retries) {
+        this.retries = retries;
+        return this;
+    }
+
+    public Boolean getPrintTimestamp() {
+        return printTimestamp;
+    }
+
+    public RecorderConfig setPrintTimestamp(Boolean printTimestamp) {
+        this.printTimestamp = printTimestamp;
         return this;
     }
 

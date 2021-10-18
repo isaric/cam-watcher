@@ -1,6 +1,6 @@
 package com.path.variable.picam.recorder;
 
-import com.path.variable.commons.slack.SlackHook;
+import com.path.variable.picam.properties.RecorderConfig;
 import com.path.variable.picam.recorder.detectors.AbstractDetector;
 import com.path.variable.picam.recorder.detectors.AreaMotionDetector;
 import com.path.variable.picam.recorder.notifiers.Notifier;
@@ -20,6 +20,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static com.path.variable.commons.properties.Configuration.getConfiguration;
 import static com.path.variable.picam.properties.RecorderConstants.*;
@@ -53,18 +54,17 @@ public class Recorder {
 
     private boolean stop;
 
-    public Recorder(int cameraNumber, Integer deviceId, String locationName, String path, Double recorderSpecificArea, List<Notifier> notifiers) {
+    public Recorder(RecorderConfig config, Integer cameraNumber, List<Notifier> notifiers) {
         this.notifiers = notifiers;
         this.tempFilePath = format(TEMP_FILE_NAME_TEMPLATE, cameraNumber);
         this.cameraNumber = cameraNumber;
-        this.locationName = locationName;
-        this.recorderSpecificArea = recorderSpecificArea;
-        var cam = resolveVideoCapture(deviceId, path);
-        this.fps = (int) cam.get(Videoio.CAP_PROP_FPS);
-        this.frameSize = new Size((int) cam.get(Videoio.CAP_PROP_FRAME_WIDTH), (int) cam.get(Videoio.CAP_PROP_FRAME_HEIGHT));
+        this.locationName = config.getLocation();
+        this.recorderSpecificArea = config.getAreaMinimum();
+        this.camera = new CameraWrapper(getVideoSupplier(config.getDeviceId(), config.getPath()), config.getRetries());
+        this.fps = (int) camera.getCamera().get(Videoio.CAP_PROP_FPS);
+        this.frameSize = new Size((int) camera.getCamera().get(Videoio.CAP_PROP_FRAME_WIDTH), (int) camera.getCamera().get(Videoio.CAP_PROP_FRAME_HEIGHT));
         var save = new VideoWriter(tempFilePath, VideoWriter.fourcc('x', '2', '6', '4'), fps, frameSize, true);
-        this.writer = new WriterWrapper(save, locationName, getConfiguration().getBoolean("timestamp.{0}", false, cameraNumber));
-        this.camera = new CameraWrapper(cam);
+        this.writer = new WriterWrapper(save, this.locationName, config.getPrintTimestamp());
         this.detector = setupDetector();
     }
 
@@ -76,12 +76,8 @@ public class Recorder {
         }
         try {
             if (camera.isOpened()) {
-                var start = ZonedDateTime.now();
-                Integer maxRuntime = getConfiguration().getInteger("max.runtime");
-                int captureDuration = getConfiguration().getInteger("capture.duration");
-                boolean allTime = getConfiguration().getBoolean("capture.alltime") || maxRuntime == null;
-
-                while ((allTime || hasNotElapsed(start, maxRuntime, ChronoUnit.MINUTES)) && !stop) {
+                int captureDuration = getConfiguration().getInteger("capture.duration", 1);
+                while (!stop) {
                     if (detector.detect()) {
                         var msg = String.format(ALERT_MESSAGE_TEMPLATE, locationName, STANDARD_DATE_FORMAT.format(new Date()));
                         notify(msg);
@@ -110,12 +106,14 @@ public class Recorder {
         this.stop = true;
     }
 
-    private VideoCapture resolveVideoCapture(Integer deviceId, String path) {
-        if (path == null) {
-            if (deviceId != null) return new VideoCapture(deviceId);
-            throw new IllegalArgumentException("Neither device id nor camera path have been defined1");
-        }
-        return new VideoCapture(path);
+    private Supplier<VideoCapture> getVideoSupplier(Integer deviceId, String path) {
+        return () -> {
+            if (path == null) {
+                if (deviceId != null) return new VideoCapture(deviceId);
+                throw new IllegalArgumentException("Neither device id nor camera path have been defined!");
+            }
+            return new VideoCapture(path);
+        };
     }
 
     private void attemptSalvage() {
@@ -180,5 +178,13 @@ public class Recorder {
 
     public String getLocationName() {
         return locationName;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Recorder) {
+            return ((Recorder) obj).getCameraNumber() == this.cameraNumber;
+        }
+        return false;
     }
 }

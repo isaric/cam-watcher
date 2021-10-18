@@ -9,14 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 import static com.path.variable.commons.properties.Configuration.getConfiguration;
 import static java.lang.Runtime.getRuntime;
-import static java.lang.String.format;
 
 public class App {
     private static final Logger LOG = LoggerFactory.getLogger(App.class);
@@ -45,7 +41,7 @@ public class App {
         LOG.info("Execution of recording program(s) concluded normally");
     }
 
-    private static void addShutdownHook(List<Recorder> recorders) {
+    private static void addShutdownHook(Set<Recorder> recorders) {
         getRuntime().addShutdownHook(new Thread(() -> {
             LOG.info("Shutdown hook activated. Shutting down gracefully.");
             recorders.forEach(Recorder::stop);

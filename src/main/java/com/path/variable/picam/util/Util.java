@@ -14,4 +14,13 @@ public class Util {
         }
         return dur.get(unit) < diff;
     }
+
+    public static boolean sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+            return true;
+        } catch (InterruptedException e) {
+            return false;
+        }
+    }
 }
