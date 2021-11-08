@@ -36,7 +36,7 @@ public class WriterWrapper {
     public void writeFrame(Mat frame) {
         if (addTimestamp) {
             Imgproc.putText(frame, String.format("CAM %s %s",cameraName , STANDARD_DATE_FORMAT.format(new Date())),
-                    new Point(50, 50), FONT_HERSHEY_COMPLEX, 0.50, new Scalar(0, 0, 0));
+                    new Point(50, 50), FONT_HERSHEY_COMPLEX, 0.50, new Scalar(255, 255, 255));
         }
         writer.write(frame);
         frame.release();

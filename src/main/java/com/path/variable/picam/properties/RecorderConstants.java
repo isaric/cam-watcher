@@ -8,7 +8,7 @@ import static com.path.variable.commons.properties.Configuration.getConfiguratio
 
 public class RecorderConstants {
 
-    public static final String ALERT_MESSAGE_TEMPLATE = "Motion detected in %s at %s";
+    public static final String ALERT_MESSAGE_TEMPLATE = "Motion detected in %s";
 
     public static final DateFormat STANDARD_DATE_FORMAT = new SimpleDateFormat("HH:mm:ss.SSSS dd/MM/yyyy");
 

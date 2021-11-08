@@ -3,6 +3,19 @@ package com.path.variable.picam.properties;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * RecorderConfig - the configuration POJO that is read as a JSON file
+ * from the configuration drop-in folder.
+ * List of properties:
+ *  path - the url of the camera stream
+ *  deviceId - the v4l device id (either this or path must be present)
+ *  location - the name of the location (mandatory)
+ *  areaMinimum - a double specifying the minimum area of movement that must be detected for an alert to be triggered
+ *  120.00 is the global default
+ *  retries - (optional) the number of retries for reading from the camera, defaults to 1
+ *  printTimestamp - whether to add a timestamp to the recording frames
+ *  notifiers - the list of notifiers that will be used upon detecting a motion event
+ */
 public class RecorderConfig {
 
     private String path;
@@ -15,7 +28,7 @@ public class RecorderConfig {
 
     private Integer retries;
 
-    private Boolean printTimestamp;
+    private boolean printTimestamp;
 
     private List<Map<String, Object>> notifiers;
 

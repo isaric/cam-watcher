@@ -21,10 +21,10 @@ public class App {
 
     public static void main(String[] args) throws IOException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        RecorderConfigurationReader slurper = new RecorderConfigurationReader();
+        RecorderConfigurationReader reader = new RecorderConfigurationReader();
         var threads = new ArrayList<Thread>();
         String configFolder = getConfiguration().getString("recorder.config.folder");
-        var recs = slurper.loadRecordersFromFolder(new File(configFolder));
+        var recs = reader.loadRecordersFromFolder(new File(configFolder));
         ConfigurationFileWatcher watcher = new ConfigurationFileWatcher(configFolder, threads, recs);
         LOG.info("initialized all threads for recording. starting now.");
         watcher.init();

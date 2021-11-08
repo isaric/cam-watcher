@@ -57,9 +57,11 @@ public class CameraWrapper {
         try {
             success = cam.read(target);
         } catch (Exception ex) {
+            target.release();
             throw new IllegalStateException("Exception while reading image! Throwing exception!");
         }
         if (!success) {
+            target.release();
             throw new IllegalStateException("Could not read image. Camera object returned null!");
         }
         return target;

@@ -13,6 +13,12 @@ import static com.path.variable.picam.util.Util.sleep;
 import static java.lang.String.format;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 
+/**
+ * ConfigurationFileWatcher - Watches the recorder configuration drop-in folder
+ * for new camera files and stop files. Reacts only to creation events.
+ * In case that a camera with an existing id is loaded it does nothing.
+ * Therefore, make sure to delete that camera first using a stop command.
+ */
 public class ConfigurationFileWatcher {
 
     private final Path watcherPath;
@@ -23,7 +29,7 @@ public class ConfigurationFileWatcher {
 
     private final Set<Recorder> recorders;
 
-    private final RecorderConfigurationReader slurper;
+    private final RecorderConfigurationReader reader;
 
     private WatchKey mainKey;
 
@@ -35,19 +41,20 @@ public class ConfigurationFileWatcher {
         this.stopPath = Path.of(watcherPath, "/stop");
         this.threads = threads;
         this.recorders = recorders;
-        this.slurper = new RecorderConfigurationReader();
+        this.reader = new RecorderConfigurationReader();
     }
 
     public void init() throws IOException {
         WatchService watcher = FileSystems.getDefault().newWatchService();
+        WatchService stopWatcher = FileSystems.getDefault().newWatchService();
         mainKey = watcherPath.register(watcher, ENTRY_CREATE);
-        stopKey = stopPath.register(watcher, ENTRY_CREATE);
+        stopKey = stopPath.register(stopWatcher, ENTRY_CREATE);
         recorders.forEach(this::startRecording);
     }
 
     public void watch() {
-        pollForEventAndSlurp(mainKey, slurper::loadRecordersFromFolder, watcherPath.toFile(), this::mergeRecordersAndThreads);
-        pollForEventAndSlurp(stopKey, slurper::loadStopCommandsFromFolder, stopPath.toFile(), this::deleteRecordersAndStopThreads);
+        pollForEventAndSlurp(mainKey, reader::loadRecordersFromFolder, watcherPath.toFile(), this::mergeRecordersAndThreads);
+        pollForEventAndSlurp(stopKey, reader::loadStopCommandsFromFolder, stopPath.toFile(), this::deleteRecordersAndStopThreads);
     }
 
     private <T> void pollForEventAndSlurp(WatchKey key, Function<File, Set<T>> slurpCommand, File folder, Consumer<Set<T>> merger) {
@@ -59,10 +66,10 @@ public class ConfigurationFileWatcher {
     }
 
     private void mergeRecordersAndThreads(Set<Recorder> newRecorders) {
-        newRecorders.forEach(this::addToListsAndRunThread);
+        newRecorders.forEach(this::addAndRunThread);
     }
 
-    private void addToListsAndRunThread(Recorder recorder) {
+    private void addAndRunThread(Recorder recorder) {
         if (recorders.add(recorder)) {
             startRecording(recorder);
         }

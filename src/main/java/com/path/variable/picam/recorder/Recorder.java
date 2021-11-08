@@ -79,7 +79,7 @@ public class Recorder {
                 int captureDuration = getConfiguration().getInteger("capture.duration", 1);
                 while (!stop) {
                     if (detector.detect()) {
-                        var msg = String.format(ALERT_MESSAGE_TEMPLATE, locationName, STANDARD_DATE_FORMAT.format(new Date()));
+                        var msg = String.format(ALERT_MESSAGE_TEMPLATE, locationName);
                         notify(msg);
                         LOG.info(msg);
                         try {
@@ -107,6 +107,7 @@ public class Recorder {
     }
 
     private Supplier<VideoCapture> getVideoSupplier(Integer deviceId, String path) {
+        LOG.debug("Recreating Video Capture deviceId = {}, path = {}", deviceId, path);
         return () -> {
             if (path == null) {
                 if (deviceId != null) return new VideoCapture(deviceId);

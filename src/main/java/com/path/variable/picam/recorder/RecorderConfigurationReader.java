@@ -76,6 +76,7 @@ public class RecorderConfigurationReader {
         try {
             StopCommand stopCommand = getStopCommand(commandFile);
             commandFile.delete();
+            LOG.info("Stopping cameras with id(s) {}", stopCommand.getCameraIds());
             return stopCommand.getCameraIds();
         } catch (IOException ex) {
             LOG.error("Could not read delete command file {}", commandFile.getAbsolutePath(), ex);
