@@ -7,10 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.Supplier;
 
-import static com.path.variable.commons.properties.Configuration.getConfiguration;
-import static org.opencv.videoio.Videoio.CAP_PROP_AUTO_EXPOSURE;
-import static org.opencv.videoio.Videoio.CAP_PROP_EXPOSURE;
-
 public class CameraWrapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(CameraWrapper.class);
@@ -29,8 +25,6 @@ public class CameraWrapper {
         if (camera == null) {
             throw new IllegalStateException("Camera object is null! Terminating sequence!");
         }
-        camera.set(CAP_PROP_AUTO_EXPOSURE, 1);
-        camera.set(CAP_PROP_EXPOSURE, getConfiguration().getDouble("global.exposure"));
     }
 
     public Mat read() {
