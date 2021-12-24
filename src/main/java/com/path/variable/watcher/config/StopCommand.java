@@ -1,4 +1,4 @@
-package com.path.variable.picam.properties;
+package com.path.variable.watcher.config;
 
 import java.util.List;
 

@@ -1,17 +1,19 @@
-package com.path.variable.picam;
+package com.path.variable.watcher;
 
-import com.path.variable.picam.recorder.ConfigurationFileWatcher;
-import com.path.variable.picam.recorder.Recorder;
-import com.path.variable.picam.recorder.RecorderConfigurationReader;
+import com.path.variable.watcher.config.CameraConfigurationReader;
+import com.path.variable.watcher.config.ConfigurationFileWatcher;
 import org.opencv.core.Core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.path.variable.commons.properties.Configuration.getConfiguration;
+import static com.path.variable.watcher.util.Util.sleep;
 import static java.lang.Runtime.getRuntime;
 
 public class App {
@@ -21,13 +23,15 @@ public class App {
 
     public static void main(String[] args) throws IOException {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        RecorderConfigurationReader reader = new RecorderConfigurationReader();
-        var threads = new ArrayList<Thread>();
+
+        CameraConfigurationReader reader = new CameraConfigurationReader();
         String configFolder = getConfiguration().getString("recorder.config.folder");
-        var recs = reader.loadRecordersFromFolder(new File(configFolder));
-        ConfigurationFileWatcher watcher = new ConfigurationFileWatcher(configFolder, threads, recs);
+        var cams = reader.loadRecordersFromFolder(new File(configFolder));
         LOG.info("initialized all threads for recording. starting now.");
+
+        ConfigurationFileWatcher watcher = new ConfigurationFileWatcher(configFolder, cams);
         watcher.init();
+
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
@@ -35,34 +39,28 @@ public class App {
                 watcher.watch();
             }
         }, 1000, 1000);
-        addShutdownHook(recs);
-        waitForSafeShutdown(threads);
+
+        addShutdownHook(cams);
+        waitForSafeShutdown(cams);
+
         timer.cancel();
         LOG.info("Execution of recording program(s) concluded normally");
     }
 
-    private static void addShutdownHook(Set<Recorder> recorders) {
+    private static void addShutdownHook(Set<Camera> cameras) {
         getRuntime().addShutdownHook(new Thread(() -> {
             LOG.info("Shutdown hook activated. Shutting down gracefully.");
-            recorders.forEach(Recorder::stop);
+            cameras.forEach(Camera::stop);
             globalStop = true;
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                LOG.error("Sleep interrupted!");
-            }
+            sleep(3000);
         }));
     }
 
-    private static void waitForSafeShutdown(List<Thread> threads) {
+    private static void waitForSafeShutdown(Set<Camera> cameras) {
         var stop = false;
         do {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                LOG.error("Sleep was interrupted!", ex);
-            }
-            stop = threads.stream().noneMatch(Thread::isAlive) && globalStop;
+            sleep(1000);
+            stop = cameras.stream().noneMatch(Camera::isAlive) && globalStop;
 
         } while (!stop);
     }

@@ -1,4 +1,7 @@
-package com.path.variable.picam.properties;
+package com.path.variable.watcher.config;
+
+import com.path.variable.watcher.monitors.MonitorType;
+import com.path.variable.watcher.recorders.RecorderType;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +19,7 @@ import java.util.Map;
  *  printTimestamp - whether to add a timestamp to the recording frames
  *  notifiers - the list of notifiers that will be used upon detecting a motion event
  */
-public class RecorderConfig {
+public class CameraConfig {
 
     private String path;
 
@@ -32,11 +35,17 @@ public class RecorderConfig {
 
     private List<Map<String, Object>> notifiers;
 
+    private String rtspUrl;
+
+    private RecorderType recorderType;
+
+    private MonitorType monitorType;
+
     public String getPath() {
         return path;
     }
 
-    public RecorderConfig setPath(String path) {
+    public CameraConfig setPath(String path) {
         this.path = path;
         return this;
     }
@@ -45,7 +54,7 @@ public class RecorderConfig {
         return deviceId;
     }
 
-    public RecorderConfig setDeviceId(Integer deviceId) {
+    public CameraConfig setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
         return this;
     }
@@ -54,7 +63,7 @@ public class RecorderConfig {
         return location;
     }
 
-    public RecorderConfig setLocation(String location) {
+    public CameraConfig setLocation(String location) {
         this.location = location;
         return this;
     }
@@ -63,7 +72,7 @@ public class RecorderConfig {
         return areaMinimum;
     }
 
-    public RecorderConfig setAreaMinimum(Double areaMinimum) {
+    public CameraConfig setAreaMinimum(Double areaMinimum) {
         this.areaMinimum = areaMinimum;
         return this;
     }
@@ -72,17 +81,8 @@ public class RecorderConfig {
         return retries;
     }
 
-    public RecorderConfig setRetries(Integer retries) {
+    public CameraConfig setRetries(Integer retries) {
         this.retries = retries;
-        return this;
-    }
-
-    public Boolean getPrintTimestamp() {
-        return printTimestamp;
-    }
-
-    public RecorderConfig setPrintTimestamp(Boolean printTimestamp) {
-        this.printTimestamp = printTimestamp;
         return this;
     }
 
@@ -90,8 +90,44 @@ public class RecorderConfig {
         return notifiers;
     }
 
-    public RecorderConfig setNotifiers(List<Map<String, Object>> notifiers) {
+    public CameraConfig setNotifiers(List<Map<String, Object>> notifiers) {
         this.notifiers = notifiers;
+        return this;
+    }
+
+    public boolean isPrintTimestamp() {
+        return printTimestamp;
+    }
+
+    public CameraConfig setPrintTimestamp(boolean printTimestamp) {
+        this.printTimestamp = printTimestamp;
+        return this;
+    }
+
+    public String getRtspUrl() {
+        return rtspUrl;
+    }
+
+    public CameraConfig setRtspUrl(String rtspUrl) {
+        this.rtspUrl = rtspUrl;
+        return this;
+    }
+
+    public RecorderType getRecorderType() {
+        return recorderType;
+    }
+
+    public CameraConfig setRecorderType(RecorderType recorderType) {
+        this.recorderType = recorderType;
+        return this;
+    }
+
+    public MonitorType getMonitorType() {
+        return monitorType;
+    }
+
+    public CameraConfig setMonitorType(MonitorType monitorType) {
+        this.monitorType = monitorType;
         return this;
     }
 }

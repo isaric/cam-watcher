@@ -5,7 +5,7 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.path.variable.picam'
+group = 'com.path.variable.watcher'
 version = '1.0.0-SNAPSHOT'
 
 repositories {
@@ -16,8 +16,8 @@ repositories {
     maven {
         url "https://maven.pkg.github.com/isaric/commons-lib"
         credentials {
-            username property("github.user")
-            password property("github.token")
+            username = property("github.user")
+            password = property("github.token")
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.path.variable.picam.util;
+package com.path.variable.watcher.util;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;

@@ -1,4 +1,4 @@
-package com.path.variable.picam.recorder.notifiers;
+package com.path.variable.watcher.notifiers;
 
 import com.path.variable.commons.slack.SlackHook;
 import org.slf4j.Logger;

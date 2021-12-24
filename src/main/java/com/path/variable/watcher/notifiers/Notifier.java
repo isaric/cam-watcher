@@ -1,4 +1,4 @@
-package com.path.variable.picam.recorder.notifiers;
+package com.path.variable.watcher.notifiers;
 
 public interface Notifier {
 

@@ -1,10 +1,14 @@
-package com.path.variable.picam.recorder;
+package com.path.variable.watcher.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.path.variable.picam.properties.RecorderConfig;
-import com.path.variable.picam.properties.StopCommand;
-import com.path.variable.picam.recorder.notifiers.Notifier;
-import com.path.variable.picam.recorder.notifiers.NotifierFactory;
+import com.path.variable.watcher.Camera;
+import com.path.variable.watcher.monitors.OpenCvMonitor;
+import com.path.variable.watcher.notifiers.Notifier;
+import com.path.variable.watcher.notifiers.NotifierFactory;
+import com.path.variable.watcher.recorders.FFMpegRecorder;
+import com.path.variable.watcher.recorders.OpenCvRecorder;
+import com.path.variable.watcher.recorders.Recorder;
+import com.path.variable.watcher.recorders.RecorderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,16 +19,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class RecorderConfigurationReader {
+public class CameraConfigurationReader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RecorderConfigurationReader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CameraConfigurationReader.class);
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final NotifierFactory notifierFactory = new NotifierFactory();
 
-    public Set<Recorder> loadRecordersFromFolder(File configFolder) {
-        return mapFilesFromFolderToList(configFolder, this::loadRecorderFromFile).collect(Collectors.toSet());
+    public Set<Camera> loadRecordersFromFolder(File configFolder) {
+        return mapFilesFromFolderToList(configFolder, this::loadCameraFromFile).collect(Collectors.toSet());
     }
 
     public Set<Integer> loadStopCommandsFromFolder(File stopFolder) {
@@ -44,20 +48,34 @@ public class RecorderConfigurationReader {
                 .filter(Objects::nonNull);
     }
 
-    private Recorder loadRecorderFromFile(File configFile) {
+    private Camera loadCameraFromFile(File configFile) {
         try {
             int cameraId = resolveCameraIdFromFileName(configFile.getName());
-            RecorderConfig recorderConfiguration = getRecorderConfig(configFile);
+            CameraConfig cameraConfig = getCameraConfig(configFile);
 
-            var recorder = new Recorder(recorderConfiguration, cameraId, getNotifiers(recorderConfiguration.getNotifiers()));
-            LOG.info("Initialized camera recorder for location {} at number {}",
-                    recorder.getLocationName(), recorder.getCameraNumber());
+            var monitor = cameraConfig.getMonitorType() != null
+                    ? new OpenCvMonitor(cameraConfig, cameraId, getNotifiers(cameraConfig.getNotifiers())) : null;
+            LOG.info("Initialized monitor for location {} at number {}",
+                    cameraConfig.getLocation(), cameraId);
+            var recorder = getRecorder(cameraConfig);
+            LOG.info("Initialized recorder for location {} at number {} with type {}", cameraConfig.getLocation(),
+                    cameraId, cameraConfig.getRecorderType());
             configFile.delete();
-            return recorder;
+            return new Camera(recorder, monitor, cameraId);
         } catch (IOException ex) {
             LOG.error("Could not read configuration file {}", configFile.getAbsolutePath(), ex);
             return null;
         }
+    }
+
+    private Recorder getRecorder(CameraConfig config) {
+        if (config.getRecorderType() == null) {
+            return null;
+        }
+        if (config.getRecorderType() == RecorderType.FFMPEG) {
+            return new FFMpegRecorder(config);
+        }
+        return new OpenCvRecorder(config);
     }
 
     private int resolveCameraIdFromFileName(String name) {
@@ -88,8 +106,8 @@ public class RecorderConfigurationReader {
         return params.stream().map(notifierFactory::createNotifier).collect(Collectors.toList());
     }
 
-    private RecorderConfig getRecorderConfig(File file) throws IOException {
-        return OBJECT_MAPPER.readValue(file, RecorderConfig.class);
+    private CameraConfig getCameraConfig(File file) throws IOException {
+        return OBJECT_MAPPER.readValue(file, CameraConfig.class);
     }
 
     private StopCommand getStopCommand(File file) throws IOException {

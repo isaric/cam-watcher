@@ -1,4 +1,4 @@
-package com.path.variable.picam.recorder.wrapper;
+package com.path.variable.watcher.wrapper;
 
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;

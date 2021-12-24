@@ -1,4 +1,4 @@
-package com.path.variable.picam.recorder.wrapper;
+package com.path.variable.watcher.wrapper;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -9,7 +9,7 @@ import org.opencv.videoio.VideoWriter;
 
 import java.util.Date;
 
-import static com.path.variable.picam.properties.RecorderConstants.STANDARD_DATE_FORMAT;
+import static com.path.variable.watcher.config.CameraConstants.STANDARD_DATE_FORMAT;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 
 public class WriterWrapper {
