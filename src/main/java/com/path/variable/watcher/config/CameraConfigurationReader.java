@@ -19,6 +19,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.path.variable.commons.properties.Configuration.getConfiguration;
+
 public class CameraConfigurationReader {
 
     private static final Logger LOG = LoggerFactory.getLogger(CameraConfigurationReader.class);
@@ -26,6 +28,12 @@ public class CameraConfigurationReader {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final NotifierFactory notifierFactory = new NotifierFactory();
+
+    private final boolean enableOpencv;
+
+    public CameraConfigurationReader() {
+        this.enableOpencv = !getConfiguration().getBoolean("disable.opencv", true);
+    }
 
     public Set<Camera> loadRecordersFromFolder(File configFolder) {
         return mapFilesFromFolderToList(configFolder, this::loadCameraFromFile).collect(Collectors.toSet());
@@ -53,7 +61,7 @@ public class CameraConfigurationReader {
             int cameraId = resolveCameraIdFromFileName(configFile.getName());
             CameraConfig cameraConfig = getCameraConfig(configFile);
 
-            var monitor = cameraConfig.getMonitorType() != null
+            var monitor = cameraConfig.getMonitorType() != null && enableOpencv
                     ? new OpenCvMonitor(cameraConfig, cameraId, getNotifiers(cameraConfig.getNotifiers())) : null;
             LOG.info("Initialized monitor for location {} at number {}",
                     cameraConfig.getLocation(), cameraId);
@@ -72,7 +80,7 @@ public class CameraConfigurationReader {
         if (config.getRecorderType() == null) {
             return null;
         }
-        if (config.getRecorderType() == RecorderType.FFMPEG) {
+        if (config.getRecorderType() == RecorderType.FFMPEG || !enableOpencv) {
             return new FFMpegRecorder(config);
         }
         return new OpenCvRecorder(config);

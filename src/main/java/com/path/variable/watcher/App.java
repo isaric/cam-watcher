@@ -19,10 +19,10 @@ import static java.lang.Runtime.getRuntime;
 public class App {
     private static final Logger LOG = LoggerFactory.getLogger(App.class);
 
-    private static boolean globalStop = false;
-
     public static void main(String[] args) throws IOException {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        if (!getConfiguration().getBoolean("disable.opencv", true)) {
+            System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        }
 
         CameraConfigurationReader reader = new CameraConfigurationReader();
         String configFolder = getConfiguration().getString("recorder.config.folder");
@@ -41,7 +41,6 @@ public class App {
         }, 1000, 1000);
 
         addShutdownHook(cams);
-        waitForSafeShutdown(cams);
 
         timer.cancel();
         LOG.info("Execution of recording program(s) concluded normally");
@@ -51,17 +50,7 @@ public class App {
         getRuntime().addShutdownHook(new Thread(() -> {
             LOG.info("Shutdown hook activated. Shutting down gracefully.");
             cameras.forEach(Camera::stop);
-            globalStop = true;
             sleep(3000);
         }));
-    }
-
-    private static void waitForSafeShutdown(Set<Camera> cameras) {
-        var stop = false;
-        do {
-            sleep(1000);
-            stop = cameras.stream().noneMatch(Camera::isAlive) && globalStop;
-
-        } while (!stop);
     }
 }

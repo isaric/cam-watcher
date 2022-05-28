@@ -14,13 +14,9 @@ public abstract class AbstractCameraComponent {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCameraComponent.class);
 
-    protected boolean stop;
-
     public abstract String getName();
 
-    public void stop() {
-        this.stop = true;
-    }
+    protected abstract void stop();
 
     protected Supplier<VideoCapture> getVideoSupplier(Integer deviceId, String path) {
         LOG.debug("Recreating Video Capture deviceId = {}, path = {}", deviceId, path);

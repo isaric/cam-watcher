@@ -18,7 +18,9 @@ public class CameraConstants {
 
     public static final String TEMP_FILE_NAME_TEMPLATE = "video_%d.avi";
 
-    public static final File DUMP_DIR = new File(getConfiguration().getString("dump.dir"));
+    public static final File SNAPSHOT_ROOT = new File(getConfiguration().getString("dump.dir"));
+
+    public static final File RECORDING_ROOT = new File(getConfiguration().getString("recording.folder", "."));
 
     private CameraConstants() {}
 }

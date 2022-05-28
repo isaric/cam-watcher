@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'ch.qos.logback:logback-classic:1.2.6'
+    implementation 'ch.qos.logback:logback-classic:1.2.9'
     implementation 'opencv:opencv-450'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.12'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
@@ -31,7 +31,7 @@ dependencies {
 }
 
 application {
-    mainClassName = 'com.path.variable.picam.App'
+    mainClassName = 'com.path.variable.watcher.App'
 }
 
 task generateDeploymentFiles(type: Copy) {

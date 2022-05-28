@@ -44,12 +44,12 @@ public class OpenCvMonitor extends Monitor {
 
     private final AbstractDetector detector;
 
-    private final List<Notifier> notifiers;
-
     private final Double recorderSpecificArea;
 
+    private boolean stop;
+
     public OpenCvMonitor(CameraConfig config, Integer cameraNumber, List<Notifier> notifiers) {
-        this.notifiers = notifiers;
+        super(notifiers);
         String tempFilePath = format(TEMP_FILE_NAME_TEMPLATE, cameraNumber);
         this.cameraNumber = cameraNumber;
         this.locationName = config.getLocation();
@@ -95,8 +95,9 @@ public class OpenCvMonitor extends Monitor {
         }
     }
 
-    private void notify(String message) {
-        notifiers.forEach(n -> n.notify(message));
+    @Override
+    protected void stop() {
+        this.stop = true;
     }
 
     private void terminate(Exception ex) {
@@ -110,7 +111,7 @@ public class OpenCvMonitor extends Monitor {
 
     private void doRecordForMinutes(int minutes) {
         String filename = FILE_NAME_FORMAT.formatted(locationName, cameraNumber, FILE_DATE_FORMAT.format(new Date()));
-        String fullPath = "%s/%s".formatted(DUMP_DIR, filename);
+        String fullPath = "%s/%s".formatted(SNAPSHOT_ROOT, filename);
         writer.open(fullPath, VideoWriter.fourcc('x', '2', '6', '4'), fps, frameSize, true);
         var start = ZonedDateTime.now();
         while (hasNotElapsed(start, minutes, ChronoUnit.MINUTES) && !this.stop) {
