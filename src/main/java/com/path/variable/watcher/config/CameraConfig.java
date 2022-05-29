@@ -21,113 +21,85 @@ import java.util.Map;
  */
 public class CameraConfig {
 
-    private String path;
+    private final String path;
 
-    private Integer deviceId;
+    private final Integer deviceId;
 
-    private String location;
+    private final String location;
 
-    private Double areaMinimum;
+    private final Double areaMinimum;
 
-    private Integer retries;
+    private final Integer retries;
 
-    private boolean printTimestamp;
+    private final boolean printTimestamp;
 
-    private List<Map<String, Object>> notifiers;
+    private final List<Map<String, Object>> notifiers;
 
-    private String rtspUrl;
+    private final String rtspUrl;
 
-    private RecorderType recorderType;
+    private final RecorderType recorderType;
 
-    private MonitorType monitorType;
+    private final MonitorType monitorType;
+
+    private final Integer captureDuration;
+
+    public CameraConfig(String path, Integer deviceId, String location, Double areaMinimum, Integer retries,
+                        boolean printTimestamp, List<Map<String, Object>> notifiers, String rtspUrl,
+                        RecorderType recorderType, MonitorType monitorType, Integer captureDuration) {
+        this.path = path;
+        this.deviceId = deviceId;
+        this.location = location;
+        this.areaMinimum = areaMinimum;
+        this.retries = retries;
+        this.printTimestamp = printTimestamp;
+        this.notifiers = notifiers;
+        this.rtspUrl = rtspUrl;
+        this.recorderType = recorderType;
+        this.monitorType = monitorType;
+        this.captureDuration = captureDuration;
+    }
 
     public String getPath() {
         return path;
-    }
-
-    public CameraConfig setPath(String path) {
-        this.path = path;
-        return this;
     }
 
     public Integer getDeviceId() {
         return deviceId;
     }
 
-    public CameraConfig setDeviceId(Integer deviceId) {
-        this.deviceId = deviceId;
-        return this;
-    }
-
     public String getLocation() {
         return location;
-    }
-
-    public CameraConfig setLocation(String location) {
-        this.location = location;
-        return this;
     }
 
     public Double getAreaMinimum() {
         return areaMinimum;
     }
 
-    public CameraConfig setAreaMinimum(Double areaMinimum) {
-        this.areaMinimum = areaMinimum;
-        return this;
-    }
-
     public Integer getRetries() {
         return retries;
-    }
-
-    public CameraConfig setRetries(Integer retries) {
-        this.retries = retries;
-        return this;
     }
 
     public List<Map<String, Object>> getNotifiers() {
         return notifiers;
     }
 
-    public CameraConfig setNotifiers(List<Map<String, Object>> notifiers) {
-        this.notifiers = notifiers;
-        return this;
-    }
-
     public boolean isPrintTimestamp() {
         return printTimestamp;
-    }
-
-    public CameraConfig setPrintTimestamp(boolean printTimestamp) {
-        this.printTimestamp = printTimestamp;
-        return this;
     }
 
     public String getRtspUrl() {
         return rtspUrl;
     }
 
-    public CameraConfig setRtspUrl(String rtspUrl) {
-        this.rtspUrl = rtspUrl;
-        return this;
-    }
-
     public RecorderType getRecorderType() {
         return recorderType;
-    }
-
-    public CameraConfig setRecorderType(RecorderType recorderType) {
-        this.recorderType = recorderType;
-        return this;
     }
 
     public MonitorType getMonitorType() {
         return monitorType;
     }
 
-    public CameraConfig setMonitorType(MonitorType monitorType) {
-        this.monitorType = monitorType;
-        return this;
+    public Integer getCaptureDuration() {
+        return captureDuration;
     }
 }

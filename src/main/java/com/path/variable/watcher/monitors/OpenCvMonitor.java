@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.path.variable.commons.properties.Configuration.getConfiguration;
 import static com.path.variable.watcher.config.CameraConstants.*;
 import static com.path.variable.watcher.util.Util.hasNotElapsed;
 import static com.path.variable.watcher.util.Util.sleep;
@@ -46,6 +45,8 @@ public class OpenCvMonitor extends Monitor {
 
     private final Double recorderSpecificArea;
 
+    private final Integer captureDuration;
+
     private boolean stop;
 
     public OpenCvMonitor(CameraConfig config, Integer cameraNumber, List<Notifier> notifiers) {
@@ -60,6 +61,7 @@ public class OpenCvMonitor extends Monitor {
         var save = new VideoWriter(tempFilePath, VideoWriter.fourcc('x', '2', '6', '4'), fps, frameSize, true);
         this.writer = new WriterWrapper(save, this.locationName, config.isPrintTimestamp());
         this.detector = setupDetector();
+        this.captureDuration = config.getCaptureDuration();
     }
 
     @Override
@@ -71,7 +73,7 @@ public class OpenCvMonitor extends Monitor {
         sleep(1000);
         try {
             if (camera.isOpened()) {
-                int captureDuration = getConfiguration().getInteger("capture.duration", 1);
+                int captureDuration = this.captureDuration == null ? DEFAULT_CAPTURE_DURATION : this.captureDuration;
                 while (!stop) {
                     if (detector.detect()) {
                         var msg = String.format(ALERT_MESSAGE_TEMPLATE, locationName);
@@ -128,7 +130,7 @@ public class OpenCvMonitor extends Monitor {
     private AbstractDetector setupDetector() {
         var detectorParameters = new HashMap<String, Object>();
         detectorParameters.put("camera", camera);
-        Double area = recorderSpecificArea == null ? getConfiguration().getDouble("area.minimum") : recorderSpecificArea;
+        Double area = recorderSpecificArea == null ? DEFAULT_AREA_MINIMUM : recorderSpecificArea;
         detectorParameters.put("motion.contour.area", area);
         return new AreaMotionDetector(detectorParameters);
     }

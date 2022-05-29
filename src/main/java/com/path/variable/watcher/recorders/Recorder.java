@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Timer;
 
-import static com.path.variable.commons.properties.Configuration.getConfiguration;
 import static com.path.variable.watcher.config.CameraConstants.RECORDING_ROOT;
 
 public abstract class Recorder extends AbstractCameraComponent {

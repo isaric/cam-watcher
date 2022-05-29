@@ -18,9 +18,13 @@ public class CameraConstants {
 
     public static final String TEMP_FILE_NAME_TEMPLATE = "video_%d.avi";
 
-    public static final File SNAPSHOT_ROOT = new File(getConfiguration().getString("dump.dir"));
+    public static final File SNAPSHOT_ROOT = new File(getConfiguration().getString("snapshot.dir"));
 
     public static final File RECORDING_ROOT = new File(getConfiguration().getString("recording.folder", "."));
+
+    public static final Double DEFAULT_AREA_MINIMUM = getConfiguration().getDouble("area.minimum");
+
+    public static final Integer DEFAULT_CAPTURE_DURATION = getConfiguration().getInteger("capture.duration", 1);
 
     private CameraConstants() {}
 }
