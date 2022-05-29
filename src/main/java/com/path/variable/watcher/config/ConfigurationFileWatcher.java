@@ -32,11 +32,11 @@ public class ConfigurationFileWatcher {
     private WatchKey stopKey;
 
 
-    public ConfigurationFileWatcher(String watcherPath, Set<Camera> recorders) {
+    public ConfigurationFileWatcher(String watcherPath, Set<Camera> recorders, CameraConfigurationReader reader) {
         this.watcherPath = Path.of(watcherPath);
         this.stopPath = Path.of(watcherPath, "/stop");
         this.recorders = recorders;
-        this.reader = new CameraConfigurationReader();
+        this.reader = reader;
     }
 
     public void init() throws IOException {

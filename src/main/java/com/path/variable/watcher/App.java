@@ -12,7 +12,8 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.path.variable.commons.properties.Configuration.getConfiguration;
+import static com.path.variable.watcher.config.CameraConstants.ENABLE_OPENCV;
+import static com.path.variable.watcher.config.CameraConstants.RECORDER_CONFIG_FOLDER;
 import static com.path.variable.watcher.util.Util.sleep;
 import static java.lang.Runtime.getRuntime;
 
@@ -20,16 +21,15 @@ public class App {
     private static final Logger LOG = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) throws IOException {
-        if (!getConfiguration().getBoolean("disable.opencv", true)) {
+        if (ENABLE_OPENCV) {
             System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         }
 
         CameraConfigurationReader reader = new CameraConfigurationReader();
-        String configFolder = getConfiguration().getString("recorder.config.folder");
-        var cams = reader.loadRecordersFromFolder(new File(configFolder));
+        var cams = reader.loadRecordersFromFolder(new File(RECORDER_CONFIG_FOLDER));
         LOG.info("initialized all threads for recording. starting now.");
 
-        ConfigurationFileWatcher watcher = new ConfigurationFileWatcher(configFolder, cams);
+        ConfigurationFileWatcher watcher = new ConfigurationFileWatcher(RECORDER_CONFIG_FOLDER, cams, reader);
         watcher.init();
 
         Timer timer = new Timer();

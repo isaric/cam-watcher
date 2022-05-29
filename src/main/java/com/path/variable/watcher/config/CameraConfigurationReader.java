@@ -8,7 +8,6 @@ import com.path.variable.watcher.notifiers.NotifierFactory;
 import com.path.variable.watcher.recorders.FFMpegRecorder;
 import com.path.variable.watcher.recorders.OpenCvRecorder;
 import com.path.variable.watcher.recorders.Recorder;
-import com.path.variable.watcher.recorders.RecorderType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.path.variable.commons.properties.Configuration.getConfiguration;
+import static com.path.variable.watcher.config.CameraConstants.ENABLE_OPENCV;
 
 public class CameraConfigurationReader {
 
@@ -28,12 +27,6 @@ public class CameraConfigurationReader {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final NotifierFactory notifierFactory = new NotifierFactory();
-
-    private final boolean enableOpencv;
-
-    public CameraConfigurationReader() {
-        this.enableOpencv = !getConfiguration().getBoolean("disable.opencv", true);
-    }
 
     public Set<Camera> loadRecordersFromFolder(File configFolder) {
         return mapFilesFromFolderToList(configFolder, this::loadCameraFromFile).collect(Collectors.toSet());
@@ -61,7 +54,7 @@ public class CameraConfigurationReader {
             int cameraId = resolveCameraIdFromFileName(configFile.getName());
             CameraConfig cameraConfig = getCameraConfig(configFile);
 
-            var monitor = cameraConfig.getMonitorType() != null && enableOpencv
+            var monitor = cameraConfig.getMonitorType() != null && ENABLE_OPENCV
                     ? new OpenCvMonitor(cameraConfig, cameraId, getNotifiers(cameraConfig.getNotifiers())) : null;
             LOG.info("Initialized monitor for location {} at number {}",
                     cameraConfig.getLocation(), cameraId);
@@ -80,10 +73,10 @@ public class CameraConfigurationReader {
         if (config.getRecorderType() == null) {
             return null;
         }
-        if (config.getRecorderType() == RecorderType.FFMPEG || !enableOpencv) {
-            return new FFMpegRecorder(config);
-        }
-        return new OpenCvRecorder(config);
+        return switch (config.getRecorderType()) {
+            case FFMPEG -> new FFMpegRecorder(config);
+            case OPEN_CV -> new OpenCvRecorder(config);
+        };
     }
 
     private int resolveCameraIdFromFileName(String name) {
