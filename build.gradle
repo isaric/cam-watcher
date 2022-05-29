@@ -16,8 +16,10 @@ repositories {
     maven {
         url "https://maven.pkg.github.com/isaric/commons-lib"
         credentials {
-            username = property("github.user")
-            password = property("github.token")
+            // to enable public use and since github does not (to my knowledge) allow access to packages anonymously
+            // i have created a PAT with only the ability to read packages from my account
+            username = "isaric"
+            password = "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"
         }
     }
 }
