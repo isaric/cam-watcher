@@ -6,19 +6,19 @@ drop-ins. There will be no GUI added ever. There will be an (optional) REST API 
 
 The project is written using the Java programming language. Although Java as a language is portable, there are no guarantees
 that the application will work on anything other than a Linux-based OS. This is simply because it has not been tested. It also
-presents one area where a contributor could jump in if anyone is interested.
+presents one area where contributions would be welcome.
 
 ## Recording technologies
 
 The project uses ffmpeg as the recommended way to record footage from video cameras with an optonal fallback to the OpenCV
-library. Bear in mind that OpenCV offers no audio recording capabilities.
+library. Bare in mind that OpenCV offers no audio recording capabilities.
 
 ### FFmpeg recording
 
 At the low level, it works by creating processes using the Java process builder that start ffmpeg recording threads in the 
 OS in which the application is running. The prerequisite is, of course, an installed, working version of ffmpeg in that OS.
 The recording is configured to work in 1-minute chunks. This is because error recovery and immediate playback are easier to
-guarantee in this way. A prerequisite for releasing v1 is to how some way, like a periodic job, that will consolidate these
+guarantee in this way. A prerequisite for releasing v1 is to a feature, like a periodic job, that will consolidate these
 chunks into a video comprised of all clips for that camera within that day.
 
 ### Opencv recording
@@ -38,7 +38,7 @@ algorithms. A common false positive is day/night changes.
 
 ## Notification
 
-The application currently supports notifiy on motion events by providing a slack webhook url. There is the possibility to extend it
+The application currently supports notifiications on motion events by providing a slack webhook url. There is the possibility to extend it
 with other notification providers. The project might also create other types of events in the future for which notifications could 
 be triggered.
 
@@ -54,8 +54,7 @@ please check the javadoc.
 ## System properties and defaults
 
 There are also system-wide default properties, some of which need to be specified or else the application will not start. These can also be seen
-in the code or in the javadoc. Further documentation that will be created will give more detail. Also a potenital point wherecollaborators will 
-can be included.
+in the code or in the javadoc. More details will be provided in the project documentation. This is also a task where collaborators would be welcome.
 
 ## Non-java dependencies
 
