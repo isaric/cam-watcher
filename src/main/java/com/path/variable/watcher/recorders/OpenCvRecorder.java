@@ -9,7 +9,11 @@ import org.opencv.videoio.Videoio;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.TimerTask;
+
+import static com.path.variable.watcher.util.Util.hasNotElapsed;
 
 public class OpenCvRecorder extends Recorder {
 
@@ -47,7 +51,8 @@ public class OpenCvRecorder extends Recorder {
             @Override
             public void run() {
                 writer.open(getRecordingPath(config), VideoWriter.fourcc('x', '2', '6', '4'), fps, frameSize, true);
-                while (camera.isOpened()) {
+                var start = ZonedDateTime.now();
+                while (camera.isOpened() && hasNotElapsed(start, 1, ChronoUnit.MINUTES)) {
                     var frame = camera.read();
                     writer.writeFrame(frame);
                 }

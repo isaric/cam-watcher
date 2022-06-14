@@ -14,9 +14,9 @@ public class CameraConstants {
 
     public static final DateFormat FILE_DATE_FORMAT = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss");
 
-    public static final String FILE_NAME_FORMAT = "video_%s_%d_%s.avi";
+    public static final String FILE_NAME_FORMAT = "video_%s_%d_%s.mp4";
 
-    public static final String TEMP_FILE_NAME_TEMPLATE = "video_%d.avi";
+    public static final String TEMP_FILE_NAME_TEMPLATE = "video_%d.mp4";
 
     public static final File SNAPSHOT_ROOT = new File(getConfiguration().getString("snapshot.path"));
 

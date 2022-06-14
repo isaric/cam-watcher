@@ -107,7 +107,7 @@ public class OpenCvMonitor extends Monitor {
             var msg = "Camera offline! Terminating recorder!";
             LOG.error(msg);
             notify(msg);
-            Thread.currentThread().interrupt();
+            stop();
         }
     }
 
