@@ -5,7 +5,7 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.path.variable.watcher'
+group = 'com.path-variable.watcher'
 version = '1.0.0-SNAPSHOT'
 
 repositories {
