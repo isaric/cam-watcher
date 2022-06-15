@@ -41,7 +41,7 @@ public class OpenCvRecorder extends Recorder {
             private final WriterWrapper writer;
 
             {
-                this.camera = new CameraWrapper(getVideoSupplier(config.getDeviceId(), config.getPath()), config.getRetries());
+                this.camera = new CameraWrapper(getVideoSupplier(config.getDeviceId(), config.getRtspUrl()), config.getRetries());
                 this.fps = (int) camera.getCamera().get(Videoio.CAP_PROP_FPS);
                 this.frameSize = new Size((int) camera.getCamera().get(Videoio.CAP_PROP_FRAME_WIDTH),
                         (int) camera.getCamera().get(Videoio.CAP_PROP_FRAME_HEIGHT));

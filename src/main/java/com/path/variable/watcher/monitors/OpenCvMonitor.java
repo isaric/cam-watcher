@@ -55,7 +55,7 @@ public class OpenCvMonitor extends Monitor {
         this.cameraNumber = cameraNumber;
         this.locationName = config.getLocation();
         this.recorderSpecificArea = config.getAreaMinimum();
-        this.camera = new CameraWrapper(getVideoSupplier(config.getDeviceId(), config.getPath()), config.getRetries());
+        this.camera = new CameraWrapper(getVideoSupplier(config.getDeviceId(), config.getRtspUrl()), config.getRetries());
         this.fps = (int) camera.getCamera().get(Videoio.CAP_PROP_FPS);
         this.frameSize = new Size((int) camera.getCamera().get(Videoio.CAP_PROP_FRAME_WIDTH), (int) camera.getCamera().get(Videoio.CAP_PROP_FRAME_HEIGHT));
         var save = new VideoWriter(tempFilePath, VideoWriter.fourcc('x', '2', '6', '4'), fps, frameSize, true);
@@ -100,6 +100,11 @@ public class OpenCvMonitor extends Monitor {
     @Override
     protected void stop() {
         this.stop = true;
+    }
+
+    @Override
+    public boolean isAlive() {
+        return !stop;
     }
 
     private void terminate(Exception ex) {

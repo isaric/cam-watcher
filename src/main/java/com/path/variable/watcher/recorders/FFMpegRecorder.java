@@ -21,7 +21,7 @@ public class FFMpegRecorder extends Recorder {
         // start initial recording instantly
         Process process = getAndStartProcess(config);
         // pass to timer to restart each minute
-        timer.scheduleAtFixedRate(new RecordingTask(process), 1000L, ONE_MINUTE_MILLI);
+        timer.scheduleAtFixedRate(new RecordingTask(process), ONE_MINUTE_MILLI, ONE_MINUTE_MILLI);
     }
 
     private Process getAndStartProcess(CameraConfig config) {
@@ -49,8 +49,7 @@ public class FFMpegRecorder extends Recorder {
 
     private List<String> getV4l2Command(CameraConfig config) {
         //TODO - ffprobe to figure out FPS and size
-        return List.of("ffmpeg", "-f", "v4l2", "-r", "1", "-framerate", "30", "-video_size", "1280x720", "-i",
-                "/dev/video%d".formatted(config.getDeviceId()));
+        return List.of("ffmpeg", "-f", "v4l2", "-r", "1", "-i", "/dev/video%d".formatted(config.getDeviceId()), getRecordingPath(config), "-c", "copy");
     }
 
     class RecordingTask extends TimerTask {

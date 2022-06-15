@@ -18,6 +18,8 @@ public abstract class AbstractCameraComponent {
 
     protected abstract void stop();
 
+    public abstract boolean isAlive();
+
     protected Supplier<VideoCapture> getVideoSupplier(Integer deviceId, String path) {
         LOG.debug("Recreating Video Capture deviceId = {}, path = {}", deviceId, path);
         return () -> {

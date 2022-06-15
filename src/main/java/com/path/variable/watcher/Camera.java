@@ -21,8 +21,12 @@ public class Camera {
     }
 
     public void init() {
-        recorder.record();
-        monitor.monitor();
+        if (recorder != null) {
+            recorder.record();
+        }
+        if (monitor != null) {
+            monitor.monitor();
+        }
     }
 
     public void stop() {
@@ -32,6 +36,19 @@ public class Camera {
         if (monitor != null) {
             monitor.stop();
         }
+    }
+
+    public boolean isAlive() {
+        boolean result = false;
+
+        if (monitor != null) {
+            result = monitor.isAlive();
+        }
+        if (recorder != null) {
+            result |= recorder.isAlive();
+        }
+
+        return result;
     }
 
     public int getId() {

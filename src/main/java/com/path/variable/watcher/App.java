@@ -42,6 +42,8 @@ public class App {
 
         addShutdownHook(cams);
 
+        waitForGracefulStop(cams);
+
         timer.cancel();
         LOG.info("Execution of recording program(s) concluded normally");
     }
@@ -52,5 +54,11 @@ public class App {
             cameras.forEach(Camera::stop);
             sleep(3000);
         }));
+    }
+
+    private static void waitForGracefulStop(Set<Camera> cameras) {
+        while (cameras.size() <= 0 || cameras.stream().anyMatch(Camera::isAlive)) {
+            sleep(1000);
+        }
     }
 }

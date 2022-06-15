@@ -1,5 +1,7 @@
 package com.path.variable.watcher.config;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.path.variable.watcher.monitors.MonitorType;
 import com.path.variable.watcher.recorders.RecorderType;
 
@@ -21,8 +23,6 @@ import java.util.Map;
  */
 public class CameraConfig {
 
-    private final String path;
-
     private final Integer deviceId;
 
     private final String location;
@@ -43,10 +43,10 @@ public class CameraConfig {
 
     private final Integer captureDuration;
 
-    public CameraConfig(String path, Integer deviceId, String location, Double areaMinimum, Integer retries,
-                        boolean printTimestamp, List<Map<String, Object>> notifiers, String rtspUrl,
-                        RecorderType recorderType, MonitorType monitorType, Integer captureDuration) {
-        this.path = path;
+    @JsonCreator
+    public CameraConfig(@JsonProperty("deviceId") Integer deviceId, @JsonProperty("location") String location, @JsonProperty("areaMinimum") Double areaMinimum, @JsonProperty("retries") Integer retries,
+                        @JsonProperty("printTimestamp") boolean printTimestamp, @JsonProperty("notifiers") List<Map<String, Object>> notifiers, @JsonProperty("rtspUrl") String rtspUrl,
+                        @JsonProperty("recorderType") RecorderType recorderType, @JsonProperty("monitorType") MonitorType monitorType, @JsonProperty("captureDuration") Integer captureDuration) {
         this.deviceId = deviceId;
         this.location = location;
         this.areaMinimum = areaMinimum;
@@ -57,10 +57,6 @@ public class CameraConfig {
         this.recorderType = recorderType;
         this.monitorType = monitorType;
         this.captureDuration = captureDuration;
-    }
-
-    public String getPath() {
-        return path;
     }
 
     public Integer getDeviceId() {

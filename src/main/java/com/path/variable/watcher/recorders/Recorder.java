@@ -29,6 +29,11 @@ public abstract class Recorder extends AbstractCameraComponent {
     }
 
     @Override
+    public boolean isAlive() {
+        return timer.purge() == 0;
+    }
+
+    @Override
     public String getName() {
         return "recorder-%s".formatted(config.getLocation());
     }

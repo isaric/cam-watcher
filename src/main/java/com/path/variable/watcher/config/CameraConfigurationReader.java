@@ -56,8 +56,10 @@ public class CameraConfigurationReader {
 
             var monitor = cameraConfig.getMonitorType() != null && ENABLE_OPENCV
                     ? new OpenCvMonitor(cameraConfig, cameraId, getNotifiers(cameraConfig.getNotifiers())) : null;
-            LOG.info("Initialized monitor for location {} at number {}",
+            if (monitor != null) {
+                LOG.info("Initialized monitor for location {} at number {}",
                     cameraConfig.getLocation(), cameraId);
+            }
             var recorder = getRecorder(cameraConfig);
             LOG.info("Initialized recorder for location {} at number {} with type {}", cameraConfig.getLocation(),
                     cameraId, cameraConfig.getRecorderType());
