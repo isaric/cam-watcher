@@ -1,4 +1,4 @@
-package com.path.variable.picam.recorder.wrapper;
+package com.path.variable.watcher.wrapper;
 
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -9,8 +9,7 @@ import org.opencv.videoio.VideoWriter;
 
 import java.util.Date;
 
-import static com.path.variable.commons.properties.Configuration.getConfiguration;
-import static com.path.variable.picam.properties.RecorderConstants.STANDARD_DATE_FORMAT;
+import static com.path.variable.watcher.config.CameraConstants.STANDARD_DATE_FORMAT;
 import static org.opencv.imgproc.Imgproc.FONT_HERSHEY_COMPLEX;
 
 public class WriterWrapper {
@@ -37,7 +36,7 @@ public class WriterWrapper {
     public void writeFrame(Mat frame) {
         if (addTimestamp) {
             Imgproc.putText(frame, String.format("CAM %s %s",cameraName , STANDARD_DATE_FORMAT.format(new Date())),
-                    new Point(50, 50), FONT_HERSHEY_COMPLEX, 0.50, new Scalar(0, 0, 0));
+                    new Point(50, 50), FONT_HERSHEY_COMPLEX, 0.50, new Scalar(255, 255, 255));
         }
         writer.write(frame);
         frame.release();

@@ -5,33 +5,26 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.path.variable.picam'
+group = 'com.path-variable.watcher'
 version = '1.0.0-SNAPSHOT'
 
 repositories {
-    jcenter()
+    mavenCentral()
     flatDir {
         dirs './libs'
-    }
-    maven {
-        url "https://maven.pkg.github.com/isaric/commons-lib"
-        credentials {
-            username property("github.user")
-            password property("github.token")
-        }
     }
 }
 
 dependencies {
-    implementation 'ch.qos.logback:logback-classic:1.2.3'
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
     implementation 'opencv:opencv-450'
-    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.12'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.2'
-    implementation 'com.path.variable.commons:commons-lib:1.3.0'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.6.1'
+    implementation 'com.path-variable:commons-lib:1.3.2'
 }
 
 application {
-    mainClassName = 'com.path.variable.picam.App'
+    mainClassName = 'com.path.variable.watcher.App'
 }
 
 task generateDeploymentFiles(type: Copy) {

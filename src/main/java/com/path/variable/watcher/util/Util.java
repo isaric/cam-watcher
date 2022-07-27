@@ -1,4 +1,4 @@
-package com.path.variable.picam.util;
+package com.path.variable.watcher.util;
 
 import java.time.Duration;
 import java.time.ZonedDateTime;
@@ -13,5 +13,14 @@ public class Util {
             return (dur.getSeconds() / 60) < diff;
         }
         return dur.get(unit) < diff;
+    }
+
+    public static boolean sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+            return true;
+        } catch (InterruptedException e) {
+            return false;
+        }
     }
 }

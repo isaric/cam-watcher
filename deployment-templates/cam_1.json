@@ -1,0 +1,14 @@
+{
+  "path": "rtsp-url-here",
+  "deviceId": 0,
+  "location": "",
+  "areaMinimum": 120.00,
+  "retries": 0,
+  "printTimestamp": false,
+  "notifiers": [
+    {
+      "type": "slack",
+      "url": "your-slack-hook-url"
+    }
+  ]
+}

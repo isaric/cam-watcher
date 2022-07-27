@@ -1,6 +1,6 @@
-package com.path.variable.picam.recorder.detectors;
+package com.path.variable.watcher.detectors;
 
-import com.path.variable.picam.recorder.wrapper.CameraWrapper;
+import com.path.variable.watcher.wrapper.CameraWrapper;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 

@@ -9,3 +9,4 @@ logs/
 *.jpg
 deployment
 dev_app.properties
+recorders/*

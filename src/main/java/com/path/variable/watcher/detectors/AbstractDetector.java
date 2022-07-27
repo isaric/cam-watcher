@@ -1,4 +1,4 @@
-package com.path.variable.picam.recorder.detectors;
+package com.path.variable.watcher.detectors;
 
 import java.util.Map;
 
